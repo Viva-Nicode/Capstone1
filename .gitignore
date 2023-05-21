@@ -1,9 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 /pythonback/garbage_classifier
-
+/pythonback/saved
 # dependencies
 /reactfront/node_modules
+/reactfront/public
 /.pnp
 .pnp.js
 
