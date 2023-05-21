@@ -1,0 +1,14 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.formatting.provider": "none",
+    "vscode-pets.petSize": "large",
+    "vscode-pets.throwBallWithMouse": true,
+    "vscode-pets.theme": "none",
+    "vscode-pets.petColor": "white",
+    "vscode-pets.position": "explorer",
+    "python.analysis.extraPaths": [
+        "./heif/pillow_heif"
+    ]
+}
