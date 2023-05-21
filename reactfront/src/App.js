@@ -22,7 +22,7 @@ const Veiws = styled.div`
     margin-left: ${(props) => props.margin};
     margin-right: 0;
     padding: 0;
-    transition: margin-left .5s ease-out;
+    transition: margin-left .3s ease-out;
 `
 
 function App() {

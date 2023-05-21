@@ -48,11 +48,12 @@ const NavOption = styled.nav`
     border-color: #BEBEBE;
     box-sizing: border-box;
     margin: 0;
-    margin-right: 1%;
+    margin-right: 2%;
     padding: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 20px;
 `
 
 const OptionItem = styled.span`
@@ -73,7 +74,7 @@ const CurruntSelect = styled.div`
     height: 100%;
     background-color: #faf6c5;
     border-radius: 8px;
-    transition: all.5s ease;
+    transition: all.3s ease;
 `
 
 const Navbar = () => {
