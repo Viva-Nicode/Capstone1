@@ -150,6 +150,6 @@ const UploadPage = () => {
         <LoadingModal display={modalActive} />
     </C>)
 }
-//로딩모달 완성
+// 로딩모달 완성
 // 몇개의 객체찾았는지 표시
 export default UploadPage
