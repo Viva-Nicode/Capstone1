@@ -1,13 +1,24 @@
-from flask import Flask, request, jsonify
 import numpy as np
 import logging
 import tensorflow as tf
-
+import datetime
 import tensorflow_hub as hub
-from PIL import Image
 import uuid
 import subprocess
 import os
+from flask import Flask, request, jsonify
+from flask_jwt_extended import (
+    JWTManager,
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+    jwt_required,
+)
+from datetime import timedelta
+from flask_bcrypt import Bcrypt
+from PIL import Image
+from sqlalchemy import create_engine, Column, String, Date
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -107,6 +118,34 @@ def run_detector(detector, path):
 
 app = Flask(__name__)
 
+app.config.from_pyfile("config.py")
+app.config["SECRET_KEY"] = "ef4uioh3f995ghu3"
+app.config["BCRYPT_LEVEL"] = 10
+app.config["JWT_SECRET_KEY"] = "fjiwoe3oeiwjr432"
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=5)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=7)
+
+jwt = JWTManager(app)
+bcrypt = Bcrypt(app)
+
+engine = create_engine(
+    app.config["DB_URL"], encoding="utf-8", max_overflow=0, echo=True
+)
+app.database = engine
+Base = declarative_base()
+
+
+class user(Base):
+    __tablename__ = "user"
+    id = Column(String(32), primary_key=True)
+    pw = Column(String(256), nullable=False)
+    joindate = Column(Date, default=datetime.datetime.now)
+
+
+user.__table__.create(bind=engine, checkfirst=True)
+Session = sessionmaker(bind=engine)
+session = Session()
+
 
 @app.route("/uploadImage", methods=["POST", "get"])
 def getImage():
@@ -126,6 +165,54 @@ def getImage():
             "boundBoxCoordinates": b.tolist(),
         }
     )
+
+
+@app.route("/signup", methods=["POST", "GET"])
+def signup():
+    select = session.query(user).filter(user.id == request.form["email"]).count()
+    if select != 0:
+        return "email_overlap"
+
+    newuser = user(
+        id=request.form["email"],
+        pw=bcrypt.generate_password_hash(request.form["password"]),
+    )
+    session.add(newuser)
+    session.commit()
+    return "signup_success"
+
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    email = request.form["email"]
+    hash = ""
+    selectAll = session.query(user).all()
+    for row in selectAll:
+        if row.id == email:
+            hash = row.pw
+    if hash == "":
+        return jsonify({"res": "id_not_found"})
+    check = bcrypt.check_password_hash(hash, request.form["password"])
+    if check:
+        access_token = create_access_token(identity=email)
+        refresh_token = create_refresh_token(identity=email)
+        return jsonify(
+            {
+                "res": "login_success",
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+            }
+        )
+    else:
+        return jsonify({"res": "password_mismatch"})
+
+
+@app.route("/getAccess", methods=["POST", "GET"])
+@jwt_required(refresh=True)
+def getAccess():
+    current_user = get_jwt_identity()
+    access_token = create_access_token(identity=current_user)
+    return jsonify(access_token=access_token, email=current_user)
 
 
 if __name__ == "__main__":

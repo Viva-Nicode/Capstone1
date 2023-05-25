@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef, useReducer } from 'react'
+import React, { useState, useEffect, useRef, useReducer, useContext } from 'react'
 import styled from 'styled-components'
 import axios from 'axios';
+import { AppContext2 } from './App'
+
 
 const C = styled.div`
     display: flex;
@@ -14,7 +16,6 @@ const C = styled.div`
     border: solid 2px;
     border-radius: 15px;
     border-color: wheat;
-    backdrop-filter: blur(10px);
 `
 
 const OptionsContainer = styled.div`
@@ -25,24 +26,28 @@ const OptionsContainer = styled.div`
     max-height: fit-content;
 `
 
-const LoadingModal = styled.div`
+const DetectionComment = styled.div`
+    width: max-content;
+    height: 50px;
+    margin-right: 20px;
+    padding-top: 30px;
+    font-size: 1.5em;
+    text-align: center;
     display: ${(props) => props.display};
-    position: fixed;
-    z-index: 9999;
-    width: 500px;
-    height: 500px;
-    background-color: white;
 `
 
 const UploadPage = () => {
     const selectFile = useRef("")
     const uploadedImg = useRef()
     const canvasref = useRef()
+
     const [modelRes, setModelRes] = useState({})
     const [drawnImage, setDrawnImgae] = useState({})
     const [originalSize, setOriginalSize] = useState({})
     const [imgPath, setImgPath] = useState("/de.png")
-    const [modalActive, setModalActive] = useState('none')
+    const [detectionCount, setDeCount] = useState({ count: 0, display: 'none' })
+
+    const { modalactive, setmodalactive } = useContext(AppContext2)
 
     const [boundboxIdx, dispatch] = useReducer((state, action) => {
 
@@ -65,17 +70,21 @@ const UploadPage = () => {
         const i = e.target.files[0]
 
         img.onload = () => { setOriginalSize({ w: img.width, h: img.height }) }
-        img.src = URL.createObjectURL(i)
-        setImgPath(URL.createObjectURL(i))
+        try {
+            img.src = URL.createObjectURL(i)
+        } catch { return }
+        setImgPath(img.src)
+        setmodalactive('flex')
 
-        checkValues('block')
         let formData = new FormData()
         formData.append('image', i)
         const imgBoundboxResponse = await axios.post('/uploadImage', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         })
         setModelRes(imgBoundboxResponse.data)
-        checkValues('none')
+        setDeCount({ count: imgBoundboxResponse.data.score.length, display: 'block' })
+        setmodalactive('none')
+        URL.revokeObjectURL(img.src)
     }
 
     useEffect(() => {
@@ -132,24 +141,19 @@ const UploadPage = () => {
 
     }, [boundboxIdx])
 
-
-    const checkValues = (state) => {
-        setModalActive(state)
-    }
-
     return (<C>
         <input onChange={handleChange} type="file" accept=".jpg, .jpeg, .png, .heic" style={{ display: "none" }} ref={selectFile} />
         <OptionsContainer>
-            {/* <button onClick={checkValues}>v</button> */}
+            <DetectionComment display={detectionCount.display}>총 {detectionCount.count}개의 객체를 탐지했습니다.</DetectionComment>
             <img style={{ cursor: 'pointer', marginTop: 22, marginRight: 25 }} width={30} height={50} src={'/l.svg'} alt='sorry' onClick={() => { dispatch({ type: 'DECREMENT' }) }} />
             <img style={{ cursor: 'pointer', marginTop: 22, marginLeft: 20, marginRight: 15 }} width={30} height={50} src={'/r.svg'} alt='sorry' onClick={() => { dispatch({ type: 'INCREMENT' }) }} />
             <img style={{ cursor: 'pointer', margin: '10px' }} width={70} height={70} src={'/upload-image.svg'} alt='sorry' onClick={() => selectFile.current.click()} />
         </OptionsContainer>
         <canvas ref={canvasref} style={{ objectFit: 'contain', maxHeight: 620 }} />
         <img src={imgPath} ref={uploadedImg} style={{ display: 'none' }} alt='sorry' />
-        <LoadingModal display={modalActive} />
     </C>)
 }
-// 로딩모달 완성
-// 몇개의 객체찾았는지 표시
 export default UploadPage
+// footer
+// 탐지된 객체들의 리스트와 틀린경우 피드백
+// 통계를 일별 월별 각각 카테고리마다 분류된 수치 등... 분류된 수치만큼 포인트를 주는식으로 분리 유도?

@@ -1,8 +1,9 @@
 import React from 'react'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 import './nav.css'
-import { useState, useContext } from 'react'
-import { AppContext } from './App'
+import { useContext } from 'react'
+import { AppContext, AccessTokenContext } from './App'
+
 
 export const NavDiv = styled.div`
 	background-color: #FFFFFF;
@@ -11,37 +12,15 @@ export const NavDiv = styled.div`
 	width: 100%;
 	height: 70px;
 	max-height: max-content;
-	justify-content: end;
+	justify-content: space-between;
 	align-items: center;
     background-color: transparent;
-`
-
-const item = css`
-	color:#BEBEBE;
-	margin-left:1rem;
-	margin-right:1rem;
-	cursor: pointer;
-
-	&:hover{
-		color:#000000;
-		transition: .4s;
-	}
-
-	&:not(:hover){
-		transition: .4s;
-	}
-`
-const NavItem = styled.div`
-    font-size: 20px;
-    position: relative;
-    display: block;
-    font-family: 'Poppins', sans-serif;
-    ${item};
+    z-index: 0;
 `
 
 const NavOption = styled.nav`
     position: relative;
-    width: 280px;
+    width: 290px;
     height: 50px;
     background-color: white;
     border-radius: 8px;
@@ -60,7 +39,7 @@ const OptionItem = styled.span`
     margin-left: 20px;
     margin-right: 20px;
     font-size: 1em;
-    z-index: 1;
+    z-index: 2;
     text-align: center;
     cursor: pointer;
     font-family: 'Sunflower', sans-serif;
@@ -74,20 +53,32 @@ const CurruntSelect = styled.div`
     height: 100%;
     background-color: #faf6c5;
     border-radius: 8px;
-    transition: all.3s ease;
+    transition: all .2s ease;
+`
+
+const Logo = styled.div`
+    display: flex;
 `
 
 const Navbar = () => {
-    const { location, setLocation } = useContext(AppContext);
+    const { location, setLocation } = useContext(AppContext)
+    const { accessToken, setAccessToken } = useContext(AccessTokenContext)
 
     return (
         <NavDiv>
-            <NavOption>
-                <OptionItem onClick={() => { setLocation({ left: '0px', width: '88px', margin_left : '0' }) }}>Upload</OptionItem>
-                <OptionItem onClick={() => { setLocation({ left: '88px', width: '85px', margin_left : '-100%' }) }}>Sing in</OptionItem>
-                <OptionItem onClick={() => { setLocation({ left: '173px', width: '103px', margin_left : '-200%' }) }}>Statistics</OptionItem>
-                <CurruntSelect left={location.left} width={location.width} />
-            </NavOption>
+            <Logo>
+                <img width={80} height={80} style={{ marginTop: 20, marginLeft: 10 }} src='/logo.png' />
+                <span style={{ position: "relative", top: 40, fontFamily: 'Dancing Script, cursive', fontSize: '2em' }}>Capstone 1</span>
+            </Logo>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ textAlign: 'center', marginTop: 15, marginRight: 20 }}>{accessToken.email || ''}</span>
+                <NavOption>
+                    <OptionItem onClick={() => { setLocation({ left: '0px', width: '88px', margin_left: '0' }) }}>Upload</OptionItem>
+                    <OptionItem onClick={() => { setLocation({ left: '88px', width: '85px', margin_left: '-100%' }) }}>Sing in</OptionItem>
+                    <OptionItem onClick={() => { setLocation({ left: '173px', width: '103px', margin_left: '-200%' }) }}>Statistics</OptionItem>
+                    <CurruntSelect left={location.left} width={location.width} />
+                </NavOption>
+            </div>
         </NavDiv>
     )
 

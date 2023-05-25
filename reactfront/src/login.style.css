@@ -1,0 +1,135 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    position: relative;
+    background: transparent;
+    max-width: 430px;
+    width: 100%;
+    border-radius: 20px;
+    border: 2px solid white;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    margin-right: 10%;
+    border: solid 2px black;
+    box-shadow: 5px 5px 5px 5px gray;
+}
+
+.container .form {
+    width: 50%;
+    padding: 30px;
+    transition: margin-left .18s ease;
+}
+
+.container .forms {
+    display: flex;
+    align-items: center;
+    width: 200%;
+    height: 470px;
+    transition: height .2s ease;
+}
+
+.container .signup {
+    opacity: 0;
+}
+
+.container.active .signup {
+    opacity: 1;
+}
+
+.container.active .login {
+    margin-left: -50%;
+    opacity: 0;
+}
+
+.container.active .forms {
+    height: 470px;
+}
+
+/* <-- 아래는 관련 없는 스타일 --> */
+
+.container .form .title {
+    position: relative;
+    font-size: 27px;
+    font-weight: 600;
+    color: black;
+}
+
+.form .input-field {
+    margin-top: 30px;
+    height: 50px;
+}
+
+.input-field input {
+    width: 100%;
+    height: 100%;
+    padding: 0 35px;
+    border: none;
+    outline: none;
+    border-bottom: 2px solid #ccc;
+    font-size: 16px;
+    color: black;
+}
+
+.input-field input:is([type='text'], [type='password']) {
+    background: transparent;
+}
+
+.input-field input[type='submit'] {
+    color: black;
+}
+
+.input-field input::placeholder {
+    color: black;
+    font-style: italic;
+}
+
+.input-field input:is(:focus, :valid) {
+    transition: .5s;
+    border-bottom-color: #4070f4;
+}
+
+.submit-button {
+    position: relative;
+    font-size: 30px;
+    letter-spacing: 2px;
+    border-radius: 30px;
+    text-align: center;
+    text-decoration-line: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, #e3d941, #55e7fc);
+}
+
+.select-field {
+    margin-top: 10px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.order-login-field {
+    margin-top: 30px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.order-login-field .order-login {
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.select-field span {
+    height: 100%;
+    cursor: pointer;
+}
+
+.select-field span:hover {
+    text-decoration: underline;
+    color: #4070f4;
+}
