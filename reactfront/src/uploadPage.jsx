@@ -36,16 +36,16 @@ const DetectionComment = styled.div`
     display: ${(props) => props.display};
 `
 
-const UploadPage = () => {
+const UploadPage = ({setter}) => {
     const selectFile = useRef("")
     const uploadedImg = useRef()
     const canvasref = useRef()
 
     const [modelRes, setModelRes] = useState({})
     const [drawnImage, setDrawnImgae] = useState({})
-    const [originalSize, setOriginalSize] = useState({})
     const [imgPath, setImgPath] = useState("/de.png")
     const [detectionCount, setDeCount] = useState({ count: 0, display: 'none' })
+    
 
     const { modalactive, setmodalactive } = useContext(AppContext2)
 
@@ -68,8 +68,6 @@ const UploadPage = () => {
     const handleChange = async e => {
         let img = new Image()
         const i = e.target.files[0]
-
-        img.onload = () => { setOriginalSize({ w: img.width, h: img.height }) }
         try {
             img.src = URL.createObjectURL(i)
         } catch { return }
@@ -83,6 +81,7 @@ const UploadPage = () => {
         })
         setModelRes(imgBoundboxResponse.data)
         setDeCount({ count: imgBoundboxResponse.data.score.length, display: 'block' })
+        // ymin, xmin, ymax, xmax
         setmodalactive('none')
         URL.revokeObjectURL(img.src)
     }
@@ -109,6 +108,7 @@ const UploadPage = () => {
 
         if (boundboxIdx === -1)
             dispatch({ type: 'INCREMENT' })
+
     }, [imgPath])
 
     useEffect(() => {
@@ -142,11 +142,12 @@ const UploadPage = () => {
     }, [boundboxIdx])
 
     return (<C>
-        <input onChange={handleChange} type="file" accept=".jpg, .jpeg, .png, .heic" style={{ display: "none" }} ref={selectFile} />
+        <input onChange={handleChange} type="file" accept=".jpg, .jpeg, .png" style={{ display: "none" }} ref={selectFile} />
         <OptionsContainer>
-            <DetectionComment display={detectionCount.display}>총 {detectionCount.count}개의 객체를 탐지했습니다.</DetectionComment>
+            <DetectionComment display={detectionCount.display}>A total of {detectionCount.count} objects were detected</DetectionComment>
             <img style={{ cursor: 'pointer', marginTop: 22, marginRight: 25 }} width={30} height={50} src={'/l.svg'} alt='sorry' onClick={() => { dispatch({ type: 'DECREMENT' }) }} />
             <img style={{ cursor: 'pointer', marginTop: 22, marginLeft: 20, marginRight: 15 }} width={30} height={50} src={'/r.svg'} alt='sorry' onClick={() => { dispatch({ type: 'INCREMENT' }) }} />
+            <img style={{ cursor: 'pointer', marginTop: -10, marginLeft: 12, marginRight: 15 }} width={70} height={120} src={'/feedback.svg'} alt='sorry' onClick={() => { setter(true) }} />
             <img style={{ cursor: 'pointer', margin: '10px' }} width={70} height={70} src={'/upload-image.svg'} alt='sorry' onClick={() => selectFile.current.click()} />
         </OptionsContainer>
         <canvas ref={canvasref} style={{ objectFit: 'contain', maxHeight: 620 }} />
@@ -154,6 +155,5 @@ const UploadPage = () => {
     </C>)
 }
 export default UploadPage
-// footer
 // 탐지된 객체들의 리스트와 틀린경우 피드백
 // 통계를 일별 월별 각각 카테고리마다 분류된 수치 등... 분류된 수치만큼 포인트를 주는식으로 분리 유도?

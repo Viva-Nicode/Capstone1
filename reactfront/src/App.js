@@ -6,6 +6,8 @@ import Login from './login';
 import Navbar from './navbar';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
+import FeedbackModalPage from './FeedbackModal';
+import { motion, AnimatePresence } from "framer-motion"
 
 export const AppContext = createContext()
 export const AppContext2 = createContext()
@@ -18,7 +20,7 @@ const ViewContainer = styled.div`
     width: 90vw;
     overflow: hidden;
 `
-const Veiws = styled.div`
+const Veiws = styled(motion.div)`
     display: flex;
     align-items: center;
     width: 300%;
@@ -37,18 +39,16 @@ const Screen = styled.div`
     height: 100%;
     background-color: rgba(0, 0, 0, 0.4);
     display: ${(props) => props.display};
-    transition: all 1s ease-in;
 `
 const LoadingModal = styled.div`
     display: flex;
     border-radius: 20px;
     width: 400px;
     height: 400px;
-    background-color: white;
+    background-color: transparent;
     z-index: 999;
     justify-content: center;
     align-items: center;
-    transition: all 1s ease-in;
 `
 const Spinner = styled.div`
     position: relative;
@@ -76,6 +76,7 @@ function App() {
     const [modalactive, setmodalactive] = useState('none')
     const [accessToken, setAccessToken] = useState({ access_token: 'notting' })
     const [cookies] = useCookies(['refreshToken'])
+    const [feedbackModalActive, setFeedbackModalActive] = useState(false)
 
     useEffect(() => {
         const getAccessToken = async () => {
@@ -87,7 +88,7 @@ function App() {
                 })
                 setAccessToken({ access_token: response.data.access_token, email: response.data.email })
             } catch (error) {
-                console.log(error)
+                console.log('not logined')
             }
         }
         getAccessToken()
@@ -100,7 +101,7 @@ function App() {
                     <Navbar />
                     <ViewContainer>
                         <Veiws margin={location.margin_left}>
-                            <UploadPage />
+                            <UploadPage setter={setFeedbackModalActive} />
                             <Login />
                         </Veiws>
                     </ViewContainer>
@@ -109,9 +110,11 @@ function App() {
                             <Spinner />
                         </LoadingModal>
                     </Screen>
+                    <AnimatePresence>
+                        {feedbackModalActive ? <FeedbackModalPage setter={setFeedbackModalActive} /> : null}
+                    </AnimatePresence>
                 </AccessTokenContext.Provider>
             </AppContext2.Provider>
         </AppContext.Provider>)
 }
-
 export default App;

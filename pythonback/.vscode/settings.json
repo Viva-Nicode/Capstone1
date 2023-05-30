@@ -3,7 +3,7 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "python.formatting.provider": "none",
-    "vscode-pets.petSize": "large",
+    "vscode-pets.petSize": "nano",
     "vscode-pets.throwBallWithMouse": true,
     "vscode-pets.theme": "none",
     "vscode-pets.petColor": "white",

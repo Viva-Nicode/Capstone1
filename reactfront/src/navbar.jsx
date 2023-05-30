@@ -74,8 +74,8 @@ const Navbar = () => {
                 <span style={{ textAlign: 'center', marginTop: 15, marginRight: 20 }}>{accessToken.email || ''}</span>
                 <NavOption>
                     <OptionItem onClick={() => { setLocation({ left: '0px', width: '88px', margin_left: '0' }) }}>Upload</OptionItem>
-                    <OptionItem onClick={() => { setLocation({ left: '88px', width: '85px', margin_left: '-100%' }) }}>Sing in</OptionItem>
-                    <OptionItem onClick={() => { setLocation({ left: '173px', width: '103px', margin_left: '-200%' }) }}>Statistics</OptionItem>
+                    <OptionItem onClick={() => { setLocation({ left: '92px', width: '85px', margin_left: '-100%' }) }}>Sing in</OptionItem>
+                    <OptionItem onClick={() => { setLocation({ left: '180px', width: '103px', margin_left: '-200%' }) }}>Statistics</OptionItem>
                     <CurruntSelect left={location.left} width={location.width} />
                 </NavOption>
             </div>
