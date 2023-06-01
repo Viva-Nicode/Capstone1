@@ -77,6 +77,7 @@ function App() {
     const [accessToken, setAccessToken] = useState({ access_token: 'notting' })
     const [cookies] = useCookies(['refreshToken'])
     const [feedbackModalActive, setFeedbackModalActive] = useState(false)
+    const [boundboxSize, setBoundboxSize] = useState({})
 
     useEffect(() => {
         const getAccessToken = async () => {
@@ -101,7 +102,7 @@ function App() {
                     <Navbar />
                     <ViewContainer>
                         <Veiws margin={location.margin_left}>
-                            <UploadPage setter={setFeedbackModalActive} />
+                            <UploadPage setter={setFeedbackModalActive} setBoundboxSize={setBoundboxSize} />
                             <Login />
                         </Veiws>
                     </ViewContainer>
@@ -111,7 +112,7 @@ function App() {
                         </LoadingModal>
                     </Screen>
                     <AnimatePresence>
-                        {feedbackModalActive ? <FeedbackModalPage setter={setFeedbackModalActive} /> : null}
+                        {feedbackModalActive ? <FeedbackModalPage setter={setFeedbackModalActive} boundboxSize={boundboxSize} /> : null}
                     </AnimatePresence>
                 </AccessTokenContext.Provider>
             </AppContext2.Provider>
