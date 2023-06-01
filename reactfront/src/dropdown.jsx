@@ -42,6 +42,7 @@ const OptionName = styled.p`
 `
 const menus = ["battery", "cardboard", "clothes", "glass", "metal", "plastic", "shoes"]
 
+
 const Dropdown = () => {
     const [visibleMenus, setVisibleMenus] = useState(false)
     const [userSelect, setUserSelect] = useState('Select')

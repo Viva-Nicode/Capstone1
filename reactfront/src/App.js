@@ -102,7 +102,7 @@ function App() {
                     <Navbar />
                     <ViewContainer>
                         <Veiws margin={location.margin_left}>
-                            <UploadPage setter={setFeedbackModalActive} setBoundboxSize={setBoundboxSize} />
+                            <UploadPage setter={setFeedbackModalActive} setBoundboxSize={setBoundboxSize} curruntView={location.margin_left}/>
                             <Login />
                         </Veiws>
                     </ViewContainer>
