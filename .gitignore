@@ -2,6 +2,7 @@
 
 /pythonback/garbage_classifier
 /pythonback/saved
+/pythonback/chromedriver
 # dependencies
 /reactfront/node_modules
 /reactfront/public

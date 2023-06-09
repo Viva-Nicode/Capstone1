@@ -104,7 +104,7 @@ const FeedbackModalPage = ({ setter, boundboxSize }) => {
                     <canvas ref={canvasref} width={1020} height={1080} style={{ objectFit: 'contain', maxHeight: 700, maxWidth: 700, padding: '30px' }} />
                     <Dropdown />
                 </FeedbackModal>
-                <FeedbackModalFooter><FeedbackSubmitBtn><p style={{fontSize:'20px'}}>Submit</p></FeedbackSubmitBtn></FeedbackModalFooter>
+                <FeedbackModalFooter><FeedbackSubmitBtn onClick={() => { setter(false) }}><p style={{ fontSize: '20px' }}>Submit</p></FeedbackSubmitBtn></FeedbackModalFooter>
             </Container>
         </Background >
     )

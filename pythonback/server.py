@@ -17,8 +17,8 @@ from flask_jwt_extended import (
 from datetime import timedelta
 from flask_bcrypt import Bcrypt
 from PIL import Image
-from sqlalchemy import create_engine, Column, String, Date
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import create_engine, Column, String, Date, ForeignKey, select, inspect
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -76,12 +76,10 @@ def load_img(path):
     return img
 
 
-def run_detector(detector, path):
-    # 임시 이미지 로드
+def run_detector(detector, path, identity):
     img = load_img(path)
     converted_img = tf.image.convert_image_dtype(img, tf.float32)[tf.newaxis, ...]
 
-    # 객체 감지
     result = detector(converted_img)
     result = {key: value.numpy() for key, value in result.items()}
 
@@ -93,6 +91,7 @@ def run_detector(detector, path):
         if result["detection_scores"][i] >= 0.1:
             ymin, xmin, ymax, xmax = tuple(result["detection_boxes"][i])
 
+            iscrop = 0
             imgn = img.numpy()
             image_pil = Image.fromarray(np.uint8(imgn)).convert("RGB")
             im_width, im_height = image_pil.size
@@ -104,15 +103,45 @@ def run_detector(detector, path):
             )
 
             cropped_img = image_pil.crop((left, top, right, bottom))
+            ci = cropped_img
             cropped_img = cropped_img.resize((224, 224))
             cropped_img = np.array(cropped_img) / 255.0
             cropped_img = np.expand_dims(cropped_img, axis=0)
             pred = classification_model.predict(cropped_img)
+
             detection_boxes = np.append(detection_boxes, (ymin, xmin, ymax, xmax))
             detection_scores = np.append(detection_scores, np.max(pred))
             detection_class_entities = np.append(
                 detection_class_entities, categoris[np.argmax(pred)]
             )
+            if identity != None:
+                for j in range(min(result["detection_boxes"].shape[0], 10)):
+                    if result["detection_scores"][j] >= 0.1:
+                        innerymin, innerxmin, innerymax, innerxmax = tuple(
+                            result["detection_boxes"][j]
+                        )
+                        if (
+                            ymin < innerymin
+                            and innerymax < ymax
+                            and xmin < innerxmin
+                            and innerxmax < xmax
+                        ):
+                            iscrop = 1
+
+                if iscrop == 0:
+                    uid = str(uuid.uuid4())
+                    record = predictRecord(
+                        email=str(identity),
+                        imageID=uid,
+                        kategory=str(categoris[np.argmax(pred)]),
+                    )
+                    session.add(record)
+                    ci.save(
+                        "/Users/nicode./MainSpace/capstone_1/pythonback/cropedSaved/"
+                        + uid
+                        + ".jpeg"
+                    )
+    session.commit()
     return detection_class_entities, detection_scores, detection_boxes
 
 
@@ -140,14 +169,33 @@ class user(Base):
     id = Column(String(32), primary_key=True)
     pw = Column(String(256), nullable=False)
     joindate = Column(Date, default=datetime.datetime.now)
+    records = relationship("predictRecord")
+
+
+class predictRecord(Base):
+    __tablename__ = "predictRecord"
+    email = Column(String(32), ForeignKey("user.id"))
+    imageID = Column(String(128), primary_key=True)
+    kategory = Column(String(32), nullable=False)
+    genDate = Column(Date, default=datetime.datetime.now)
+
+    def getdict(self):
+        return {
+            "email": self.email,
+            "imageID": self.imageID,
+            "kategory": "clothes" if self.kategory == "shoes" else self.kategory,
+            "genDate": str(self.genDate)[-5:],
+        }
 
 
 user.__table__.create(bind=engine, checkfirst=True)
-Session = sessionmaker(bind=engine)
-session = Session()
+predictRecord.__table__.create(bind=engine, checkfirst=True)
+
+session = sessionmaker(bind=engine)()
 
 
 @app.route("/uploadImage", methods=["POST", "get"])
+@jwt_required(optional=True)
 def getImage():
     f2 = request.files["image"]
     logger.info("=========================================================")
@@ -156,7 +204,8 @@ def getImage():
     p = convertImgExt(
         "/Users/nicode./MainSpace/capstone_1/pythonback/saved/" + f2.filename
     )
-    cn, s, b = run_detector(detector, p)
+
+    cn, s, b = run_detector(detector, p, get_jwt_identity())
 
     return jsonify(
         {
@@ -165,6 +214,20 @@ def getImage():
             "boundBoxCoordinates": b.tolist(),
         }
     )
+
+
+@app.route("/getStatistics", methods=["POST", "GET"])
+@jwt_required(optional=True)
+def getStatistics():
+    email = get_jwt_identity()
+    if email == None:
+        return jsonify({"msg": "not logined"})
+    records = session.execute(
+        select(predictRecord).where(predictRecord.email == email)
+    ).fetchall()
+
+    query_dict = [row._mapping.predictRecord.getdict() for row in records]
+    return jsonify(query_dict)
 
 
 @app.route("/signup", methods=["POST", "GET"])

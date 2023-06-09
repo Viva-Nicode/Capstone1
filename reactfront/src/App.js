@@ -8,6 +8,7 @@ import { useCookies } from 'react-cookie';
 import axios from 'axios';
 import FeedbackModalPage from './FeedbackModal';
 import { motion, AnimatePresence } from "framer-motion"
+import Statistics from './statistics';
 
 export const AppContext = createContext()
 export const AppContext2 = createContext()
@@ -102,8 +103,9 @@ function App() {
                     <Navbar />
                     <ViewContainer>
                         <Veiws margin={location.margin_left}>
-                            <UploadPage setter={setFeedbackModalActive} setBoundboxSize={setBoundboxSize} curruntView={location.margin_left}/>
+                            <UploadPage setter={setFeedbackModalActive} setBoundboxSize={setBoundboxSize} curruntView={location.margin_left} accessToken={accessToken.access_token} />
                             <Login />
+                            <Statistics curruntView={location.margin_left} accessToken={accessToken.access_token}/>
                         </Veiws>
                     </ViewContainer>
                     <Screen display={modalactive}>

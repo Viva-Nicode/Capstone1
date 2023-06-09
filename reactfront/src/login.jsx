@@ -102,16 +102,16 @@ const Login = () => {
                         <span className="title">Log in</span>
                         <form >
                             <div className="input-field">
-                                <input ref={loginEmail} type="text" placeholder="Enter your email" required />
+                                <input ref={loginEmail} type="text" placeholder="Enter your email" required onKeyDown={(e) => { if (e.key === 'Enter') login() }} />
                             </div>
                             <div className="input-field">
-                                <input ref={loginPassword} autoComplete='on' type="password" placeholder="Enter your password" required />
+                                <input ref={loginPassword} autoComplete='on' type="password" placeholder="Enter your password" required onKeyDown={(e) => { if (e.key === 'Enter') login() }} />
                             </div>
                             <div className="select-field">
                                 <span onClick={() => { setState('container active') }}>not a member?</span>
                             </div>
                             <div className="input-field">
-                                <input style={{ border: "none" }} onClick={() => { login() }} value="Log in" className="submit-button" />
+                                <input style={{ border: "none", userSelect: 'none' }} onClick={() => { login() }} value="Log in" className="submit-button" />
                             </div>
                             <div style={{ textAlign: 'center', marginTop: 17, marginBottom: 13, color: 'black' }}>
                                 또는 다음으로 로그인
@@ -142,7 +142,7 @@ const Login = () => {
                                 <span style={{ color: 'black' }} onClick={() => { setState('container') }}>already member?</span>
                             </div>
                             <div className="input-field">
-                                <input style={{ border: "none" }} onClick={() => { signup() }} value="submit" className="submit-button" />
+                                <input style={{ border: "none", userSelect: 'none' }} onClick={() => { signup() }} value="submit" className="submit-button" />
                             </div>
                         </form>
                     </div>

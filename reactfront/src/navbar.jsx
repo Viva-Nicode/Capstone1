@@ -68,15 +68,15 @@ const Navbar = () => {
     return (
         <NavDiv>
             <Logo>
-                <img width={80} height={80} style={{ marginTop: 20, marginLeft: 10, userSelect: 'none' }} src='/logo.png' />
-                <span style={{ position: "relative", top: 40, fontFamily: 'Dancing Script, cursive', fontSize: '2em', userSelect: 'none' }}>Capstone 1</span>
+                <img width={55} height={55} style={{ marginTop: 30, marginLeft: 20, marginRight: 20, userSelect: 'none' }} src='/save-earth.ico' />
+                <span style={{ position: "relative", top: 40, fontFamily: 'Dancing Script, cursive', fontSize: '2em', userSelect: 'none' }}>SaveEarth</span>
             </Logo>
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{ textAlign: 'center', marginTop: 15, marginRight: 20, userSelect: 'none' }}>{accessToken.email || ''}</span>
                 <NavOption>
                     <OptionItem onClick={() => { setLocation({ left: '0px', width: '88px', margin_left: '0' }) }}>Upload</OptionItem>
-                    <OptionItem onClick={() => { setLocation({ left: '92px', width: '85px', margin_left: '-100%' }) }}>Sing in</OptionItem>
-                    <OptionItem onClick={() => { setLocation({ left: '180px', width: '103px', margin_left: '-200%' }) }}>Statistics</OptionItem>
+                    <OptionItem onClick={() => { setLocation({ left: '88px', width: '85px', margin_left: '-100%' }) }}>Sing in</OptionItem>
+                    <OptionItem onClick={() => { setLocation({ left: '177px', width: '103px', margin_left: '-200%' }) }}>Statistics</OptionItem>
                     <CurruntSelect left={location.left} width={location.width} />
                 </NavOption>
             </div>

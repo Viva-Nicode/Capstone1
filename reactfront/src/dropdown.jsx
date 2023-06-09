@@ -49,7 +49,7 @@ const Dropdown = () => {
 
     return (
         <MenusContainer>
-            <p>아래를 눌러 선택</p>
+            <p style={{ userSelect: 'none' }}>아래를 눌러 선택</p>
             <AnimatePresence>
                 <DefaultMenu transition={{ duration: 0.8 }} onClick={() => { setUserSelect('Select'); setVisibleMenus(true) }}><OptionName>{userSelect}</OptionName></DefaultMenu>
                 {visibleMenus &&
